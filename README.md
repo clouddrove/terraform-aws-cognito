@@ -71,7 +71,7 @@ This module has a few dependencies:
 Here are examples of how you can use this module in your inventory structure:
 ### Single Node
 ```hcl
-    module "elasticsearch" {
+  module "cognito" {
     source                 = "clouddrove/cognito/aws"
     version                = "0.14.0"
     name                   = "cognito"
