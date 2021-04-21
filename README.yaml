@@ -1,0 +1,50 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name: Terraform AWS Cognito
+
+# License of this project
+license: "MIT"
+
+# Canonical GitHub repo
+github_repo: clouddrove/terraform-aws-cognito
+
+# Badges to display
+badges:
+  - name: "Terraform"
+    image: "https://img.shields.io/badge/terraform-v0.14-green"
+    url: "https://www.terraform.io"
+  - name: "Licence"
+    image: "https://img.shields.io/badge/License-MIT-blue.svg"
+    url: "LICENSE.md"
+
+#  description of this project
+description: |-
+  Terraform module to create an Cognito resource on AWS.
+
+# extra content
+include:
+  - "terraform.md"
+
+# How to use this project
+# yamllint disable rule:line-length
+usage: |-
+  Here are examples of how you can use this module in your inventory structure:
+  ### Single Node
+  ```hcl
+      module "elasticsearch" {
+      source                 = "clouddrove/cognito/aws"
+      version                = "0.14.0"
+      name                   = "cognito"
+      environment            = "test"
+      label_order            = ["environment", "name"]
+      enabled                = true
+      cognito_domain         = "cd-es-cog"
+      region                 = "eu-west-1"
+      software_token_enabled = false
+    }
+  ```
