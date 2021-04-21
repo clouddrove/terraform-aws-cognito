@@ -2,7 +2,7 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-module "cognito-ex" {
+module "cognito" {
   source = "./../"
 
   name        = "cognito"
