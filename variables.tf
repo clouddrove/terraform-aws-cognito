@@ -298,13 +298,13 @@ variable "clients" {
 }
 
 variable "users" {
-  type = any
-  default = []
+  type        = any
+  default     = []
   description = "(optional) describe your variable"
 }
 
 variable "use_defaults" {
-  type = bool
+  type    = bool
   default = true
 }
 
@@ -585,7 +585,7 @@ variable "domain_certificate_arn" {
 }
 
 variable "domain_name" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "(optional) describe your variable"
 }

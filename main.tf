@@ -135,7 +135,7 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   mfa_configuration = var.mfa_configuration
 
-  deletion_protection        = var.deletion_protection
+  deletion_protection = var.deletion_protection
 
   password_policy {
     minimum_length                   = var.password_minimum_length
@@ -418,7 +418,7 @@ resource "aws_cognito_user_group" "main" {
   description  = lookup(element(local.groups, count.index), "description")
   precedence   = lookup(element(local.groups, count.index), "precedence")
   role_arn     = lookup(element(local.groups, count.index), "role_arn")
-  user_pool_id        = aws_cognito_user_pool.user_pool.*.id[0]
+  user_pool_id = aws_cognito_user_pool.user_pool.*.id[0]
 }
 
 locals {

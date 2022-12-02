@@ -5,59 +5,41 @@ provider "aws" {
 module "cognito" {
   source = "./../"
 
-  name        = "xcheck-user"
-  environment = "sandbox"
+  name        = "test-user"
+  environment = "test"
   label_order = ["environment", "name"]
 
   enabled = true
   allow_admin_create_user_only          = false
   advanced_security_mode                = "OFF"
-  domain                                = "xcheck01"
+  domain                                = "test-domain"
   software_token_enabled                = false
   mfa_configuration                     = "OFF"
   deletion_protection                   = "INACTIVE"
   users = {
-            rbuijs = {
-              email = "r.buijs@i-sec.com"
-            }
-            rzeldent = {
-              email = "r.zeldenthuis@i-sec.com"
-            }
+                test1 = {
+                  email = "test1@stackx.cloud"
+                }
+                test2 = {
+                  email = "test2@stackx.cloud"
+                }
           }
   user_groups = [
-          { name                              = "AMS"
+          { name                              = "test_group_1"
             description                       = ""
           },
-          { name                              = "BOG"
+          { name                              = "test_group_2"
             description                       = ""
           },
-          { name                              = "CUN"
-            description                       = ""
-          },
-          { name                              = "HND"
-            description                       = ""
-          },
-          { name                              = "ICN"
-            description                       = ""
-          },
-          { name                              = "MBJ"
-            description                       = ""
-          },
-          { name                              = "PUJ"
-            description                       = ""
-          },
-          { name                              = "PVR"
-            description                       = ""
-          },
-          { name                              = "SXM"
+          { name                              = "test_group_3"
             description                       = ""
           }
       ]
 
   clients = [
     {
-      name                                 = "xhrf-reporting"
-      callback_urls                        = ["https://reporting.sandbox.x-check.net"]
+      name                                 = "client_name_1"
+      callback_urls                        = [""]
       generate_secret                      = true
       logout_urls                          = []
       refresh_token_validity               = 30
@@ -67,8 +49,8 @@ module "cognito" {
       allowed_oauth_flows                  = ["code"]
     },
     {
-      name                                 = "xhrf-maintenance"
-      callback_urls                        = ["https://maintenance.sandbox.x-check.net"]
+      name                                 = "client-name_2"
+      callback_urls                        = [""]
       logout_urls                          = []
       generate_secret                      = true
       logout_urls                          = []
