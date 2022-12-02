@@ -1,7 +1,7 @@
 name: static-checks
 
 on:
-  pull_request:
+  push:
 
 jobs:
   versionExtract:

@@ -72,7 +72,7 @@ variable "username_attributes" {
 
 variable "mfa_configuration" {
   type        = string
-  default     = "ON"
+  default     = "OFF"
   description = "Multi-Factor Authentication (MFA) configuration for the User Pool. Defaults of OFF. Valid values are OFF, ON and OPTIONAL."
 }
 
@@ -154,8 +154,8 @@ variable "certificate_arn" {
   description = "The ARN of an ISSUED ACM certificate in us-east-1 for a custom domain."
 }
 
-variable "cognito_domain" {}
-variable "region" {}
+# variable "cognito_domain" {}
+# variable "region" {}
 
 variable "allow_admin_create_user_only" {
   type        = bool
@@ -169,112 +169,143 @@ variable "aws_cognito_user_group_name" {
   description = "(optional) describe your variable"
 }
 
-variable "domain" {
-  description = "(Optional) Type a domain prefix to use for the sign-up and sign-in pages that are hosted by Amazon Cognito, e.g. 'https://{YOUR_PREFIX}.auth.eu-west-1.amazoncognito.com'. The prefix must be unique across the selected AWS Region. Domain names can only contain lower-case letters, numbers, and hyphens."
-  type        = string
-  default     = null
-}
+# variable "domain" {
+#   description = "(Optional) Type a domain prefix to use for the sign-up and sign-in pages that are hosted by Amazon Cognito, e.g. 'https://{YOUR_PREFIX}.auth.eu-west-1.amazoncognito.com'. The prefix must be unique across the selected AWS Region. Domain names can only contain lower-case letters, numbers, and hyphens."
+#   type        = string
+#   default     = null
+# }
 
-variable "default_client_allowed_oauth_flows" {
+variable "client_allowed_oauth_flows" {
   description = "(Optional) List of allowed OAuth flows. Possible flows are 'code', 'implicit', and 'client_credentials'."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_allowed_oauth_flows_user_pool_client" {
+variable "client_allowed_oauth_flows_user_pool_client" {
   description = "(Optional) Whether the client is allowed to follow the OAuth protocol when interacting with Cognito User Pools."
   type        = bool
   default     = null
 }
 
-variable "default_client_allowed_oauth_scopes" {
+variable "client_allowed_oauth_scopes" {
   description = "(Optional) List of allowed OAuth scopes. Possible values are 'phone', 'email', 'openid', 'profile', and 'aws.cognito.signin.user.admin'."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_callback_urls" {
+variable "client_callback_urls" {
   description = "(Optional) List of allowed callback URLs for the identity providers."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_default_redirect_uri" {
+variable "client_default_redirect_uri" {
   description = "(Optional) The default redirect URI. Must be in the list of callback URLs."
   type        = string
   default     = null
 }
 
-variable "default_client_explicit_auth_flows" {
+variable "client_explicit_auth_flows" {
   description = "(Optional) List of authentication flows. Possible values are 'ADMIN_NO_SRP_AUTH', 'CUSTOM_AUTH_FLOW_ONLY', 'USER_PASSWORD_AUTH', 'ALLOW_ADMIN_USER_PASSWORD_AUTH', 'ALLOW_CUSTOM_AUTH', 'ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', and 'ALLOW_REFRESH_TOKEN_AUTH'."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_generate_secret" {
-  description = "(Optional) Boolean flag for generating an application secret."
+variable "client_generate_secret" {
+  description = "Should an application secret be generated"
   type        = bool
-  default     = null
+  default     = true
 }
 
-variable "default_client_logout_urls" {
+
+variable "client_logout_urls" {
   description = "(Optional) List of allowed logout URLs for the identity providers."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_read_attributes" {
+variable "client_read_attributes" {
   description = "(Optional) List of Cognito User Pool attributes the application client can read from."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_refresh_token_validity" {
+variable "client_refresh_token_validity" {
   description = "(Optional) The time limit in days refresh tokens are valid for."
   type        = number
   default     = 30
 }
 
-variable "default_client_prevent_user_existence_errors" {
+variable "client_prevent_user_existence_errors" {
   description = "(Optional) Choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the Cognito User Pool. When set to 'ENABLED' and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to 'LEGACY', those APIs will return a 'UserNotFoundException' exception if the user does not exist in the Cognito User Pool."
   type        = string
   default     = null
 }
 
-variable "default_client_supported_identity_providers" {
+variable "client_supported_identity_providers" {
   description = "(Optional) List of provider names for the identity providers that are supported on this client."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_write_attributes" {
+variable "identity_providers" {
+  description = "Cognito Pool Identity Providers"
+  type        = list(any)
+  default     = []
+  sensitive   = true
+}
+
+variable "client_write_attributes" {
   description = "(Optional) List of Cognito User Pool attributes the application client can write to."
   type        = list(string)
   default     = null
 }
 
-variable "default_client_access_token_validity" {
+variable "client_access_token_validity" {
   description = "(Optional) Time limit, between 5 minutes and 1 day, after which the access token is no longer valid and cannot be used. This value will be overridden if you have entered a value in 'default_client_token_validity_units'."
   type        = number
   default     = null
 }
 
-variable "default_client_id_token_validity" {
+variable "client_id_token_validity" {
   description = "(Optional) Time limit, between 5 minutes and 1 day, after which the ID token is no longer valid and cannot be used. This value will be overridden if you have entered a value in 'default_client_token_validity_units'."
   type        = number
   default     = null
 }
 
-variable "default_client_token_validity_units" {
+variable "client_token_validity_units" {
   description = "(Optional) Configuration block for units in which the validity times are represented in."
   type        = any
   default     = null
 }
 
-variable "default_client_enable_token_revocation" {
+variable "client_enable_token_revocation" {
   description = "(Optional) Enables or disables token revocation."
   type        = bool
   default     = null
+}
+
+variable "client_name" {
+  description = "The name of the application client"
+  type        = string
+  default     = null
+}
+
+variable "clients" {
+  description = "A container with the clients definitions"
+  type        = any
+  default     = []
+}
+
+variable "users" {
+  type = any
+  default = []
+  description = "(optional) describe your variable"
+}
+
+variable "use_defaults" {
+  type = bool
+  default = true
 }
 
 variable "invite_email_subject" {
@@ -376,7 +407,7 @@ variable "password_require_uppercase" {
 variable "allow_software_mfa_token" {
   description = "(Optional) Boolean whether to enable software token Multi-Factor (MFA) tokens, such as Time-based One-Time Password (TOTP). To disable software token MFA when 'sms_configuration' is not present, the 'mfa_configuration' argument must be set to OFF and the 'software_token_mfa_configuration' configuration block must be fully removed."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "lambda_create_auth_challenge" {
@@ -502,4 +533,59 @@ variable "module_depends_on" {
   type        = any
   description = "(Optional) A list of external resources the module depends_on."
   default     = []
+}
+
+variable "user_group_name" {
+  description = "The name of the user group"
+  type        = string
+  default     = null
+}
+
+variable "user_group_description" {
+  description = "The description of the user group"
+  type        = string
+  default     = null
+}
+
+variable "user_group_precedence" {
+  description = "The precedence of the user group"
+  type        = number
+  default     = null
+}
+
+variable "user_group_role_arn" {
+  description = "The ARN of the IAM role to be associated with the user group"
+  type        = string
+  default     = null
+}
+
+variable "user_groups" {
+  description = "A container with the user_groups definitions"
+  type        = list(any)
+  default     = []
+}
+
+variable "deletion_protection" {
+  description = "When active, DeletionProtection prevents accidental deletion of your user pool. Before you can delete a user pool that you have protected against deletion, you must deactivate this feature. Valid values are `ACTIVE` and `INACTIVE`."
+  type        = string
+  default     = "INACTIVE"
+}
+
+
+variable "domain" {
+  description = "Cognito User Pool domain"
+  type        = string
+  default     = null
+}
+
+variable "domain_certificate_arn" {
+  description = "The ARN of an ISSUED ACM certificate in us-east-1 for a custom domain"
+  type        = string
+  default     = null
+}
+
+variable "domain_name" {
+  type = string
+  default = null
+  description = "(optional) describe your variable"
 }
