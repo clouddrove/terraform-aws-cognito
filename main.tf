@@ -135,6 +135,8 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   mfa_configuration = var.mfa_configuration
 
+  deletion_protection = var.deletion_protection
+
   password_policy {
     minimum_length                   = var.password_minimum_length
     require_lowercase                = var.password_require_lowercase
@@ -173,7 +175,7 @@ resource "aws_cognito_user_pool" "user_pool" {
     for_each = var.allow_software_mfa_token ? [true] : []
 
     content {
-      enabled = true
+      enabled = false
     }
   }
 
@@ -289,19 +291,108 @@ resource "aws_cognito_user_pool" "user_pool" {
   depends_on = [var.module_depends_on]
 }
 
-resource "aws_cognito_user_pool_client" "client" {
-  count = var.enabled ? 1 : 0
-  name  = format("%s_user_client", module.labels.id)
+##############################################################################################################
+# client
+##############################################################################################################
 
-  user_pool_id        = aws_cognito_user_pool.user_pool.*.id[0]
-  explicit_auth_flows = ["ADMIN_NO_SRP_AUTH"]
+resource "aws_cognito_user_pool_client" "client" {
+  count                                = var.enabled ? length(local.clients) : 0
+  allowed_oauth_flows                  = lookup(element(local.clients, count.index), "allowed_oauth_flows", null)
+  allowed_oauth_flows_user_pool_client = lookup(element(local.clients, count.index), "allowed_oauth_flows_user_pool_client", null)
+  allowed_oauth_scopes                 = lookup(element(local.clients, count.index), "allowed_oauth_scopes", null)
+  callback_urls                        = lookup(element(local.clients, count.index), "callback_urls", null)
+  default_redirect_uri                 = lookup(element(local.clients, count.index), "default_redirect_uri", null)
+  explicit_auth_flows                  = lookup(element(local.clients, count.index), "explicit_auth_flows", null)
+  generate_secret                      = lookup(element(local.clients, count.index), "generate_secret", null)
+  logout_urls                          = lookup(element(local.clients, count.index), "logout_urls", null)
+  name                                 = lookup(element(local.clients, count.index), "name", null)
+  read_attributes                      = lookup(element(local.clients, count.index), "read_attributes", null)
+  access_token_validity                = lookup(element(local.clients, count.index), "access_token_validity", null)
+  id_token_validity                    = lookup(element(local.clients, count.index), "id_token_validity", null)
+  refresh_token_validity               = lookup(element(local.clients, count.index), "refresh_token_validity", null)
+  supported_identity_providers         = lookup(element(local.clients, count.index), "supported_identity_providers", null)
+  prevent_user_existence_errors        = lookup(element(local.clients, count.index), "prevent_user_existence_errors", null)
+  write_attributes                     = lookup(element(local.clients, count.index), "write_attributes", null)
+  enable_token_revocation              = lookup(element(local.clients, count.index), "enable_token_revocation", null)
+  user_pool_id                         = aws_cognito_user_pool.user_pool.*.id[0]
+
+  # token_validity_units
+  dynamic "token_validity_units" {
+    for_each = length(lookup(element(local.clients, count.index), "token_validity_units", {})) == 0 ? [] : [lookup(element(local.clients, count.index), "token_validity_units")]
+    content {
+      access_token  = lookup(token_validity_units.value, "access_token", null)
+      id_token      = lookup(token_validity_units.value, "id_token", null)
+      refresh_token = lookup(token_validity_units.value, "refresh_token", null)
+    }
+  }
+
+  # depends_on = [
+  #   aws_cognito_resource_server.resource,
+  #   aws_cognito_identity_provider.identity_provider
+  # ]
 }
 
-resource "aws_cognito_user_pool_domain" "user_pool_domain" {
-  count           = var.enabled ? 1 : 0
-  domain          = var.cognito_domain
+locals {
+  clients_default = [
+    {
+      allowed_oauth_flows                  = var.client_allowed_oauth_flows
+      allowed_oauth_flows_user_pool_client = var.client_allowed_oauth_flows_user_pool_client
+      allowed_oauth_scopes                 = var.client_allowed_oauth_scopes
+      callback_urls                        = var.client_callback_urls
+      default_redirect_uri                 = var.client_default_redirect_uri
+      explicit_auth_flows                  = var.client_explicit_auth_flows
+      generate_secret                      = var.client_generate_secret
+      logout_urls                          = var.client_logout_urls
+      name                                 = var.client_name
+      read_attributes                      = var.client_read_attributes
+      access_token_validity                = var.client_access_token_validity
+      id_token_validity                    = var.client_id_token_validity
+      token_validity_units                 = var.client_token_validity_units
+      refresh_token_validity               = var.client_refresh_token_validity
+      supported_identity_providers         = var.client_supported_identity_providers
+      prevent_user_existence_errors        = var.client_prevent_user_existence_errors
+      write_attributes                     = var.client_write_attributes
+      enable_token_revocation              = var.client_enable_token_revocation
+    }
+  ]
+
+  # This parses vars.clients which is a list of objects (map), and transforms it to a tuple of elements to avoid conflict with  the ternary and local.clients_default
+  clients_parsed = [for e in var.clients : {
+    allowed_oauth_flows                  = lookup(e, "allowed_oauth_flows", null)
+    allowed_oauth_flows_user_pool_client = lookup(e, "allowed_oauth_flows_user_pool_client", null)
+    allowed_oauth_scopes                 = lookup(e, "allowed_oauth_scopes", null)
+    callback_urls                        = lookup(e, "callback_urls", null)
+    default_redirect_uri                 = lookup(e, "default_redirect_uri", null)
+    explicit_auth_flows                  = lookup(e, "explicit_auth_flows", null)
+    generate_secret                      = lookup(e, "generate_secret", null)
+    logout_urls                          = lookup(e, "logout_urls", null)
+    name                                 = lookup(e, "name", null)
+    read_attributes                      = lookup(e, "read_attributes", null)
+    access_token_validity                = lookup(e, "access_token_validity", null)
+    id_token_validity                    = lookup(e, "id_token_validity", null)
+    refresh_token_validity               = lookup(e, "refresh_token_validity", null)
+    token_validity_units                 = lookup(e, "token_validity_units", {})
+    supported_identity_providers         = lookup(e, "supported_identity_providers", null)
+    prevent_user_existence_errors        = lookup(e, "prevent_user_existence_errors", null)
+    write_attributes                     = lookup(e, "write_attributes", null)
+    enable_token_revocation              = lookup(e, "enable_token_revocation", null)
+    }
+  ]
+
+  clients = length(var.clients) == 0 && (var.client_name == null || var.client_name == "") ? [] : (length(var.clients) > 0 ? local.clients_parsed : local.clients_default)
+
+}
+
+
+
+##############################################################################################################
+##############################################################################################################
+
+resource "aws_cognito_user_pool_domain" "domain" {
+  count           = !var.enabled || var.domain == null || var.domain == "" ? 0 : 1
+  domain          = var.domain
+  certificate_arn = var.domain_certificate_arn
   user_pool_id    = aws_cognito_user_pool.user_pool.*.id[0]
-  certificate_arn = var.certificate_arn
 }
 
 resource "aws_cognito_identity_pool" "identity_pool" {
@@ -309,10 +400,69 @@ resource "aws_cognito_identity_pool" "identity_pool" {
   identity_pool_name               = format("%s_identity_pool", module.labels.id)
   allow_unauthenticated_identities = false
 
-  cognito_identity_providers {
-    client_id     = aws_cognito_user_pool_client.client.*.id[0]
-    provider_name = aws_cognito_user_pool.user_pool.*.endpoint[0]
-  }
+  # cognito_identity_providers {
+  #   client_id     = aws_cognito_user_pool_client.client.*.id[0]
+  #   provider_name = aws_cognito_user_pool.user_pool.*.endpoint[0]
+  # }
 
   lifecycle { ignore_changes = [cognito_identity_providers] }
+}
+
+
+##################################################################################################################
+
+
+resource "aws_cognito_user_group" "main" {
+  count        = var.enabled ? length(local.groups) : 0
+  name         = lookup(element(local.groups, count.index), "name")
+  description  = lookup(element(local.groups, count.index), "description")
+  precedence   = lookup(element(local.groups, count.index), "precedence")
+  role_arn     = lookup(element(local.groups, count.index), "role_arn")
+  user_pool_id = aws_cognito_user_pool.user_pool.*.id[0]
+}
+
+locals {
+  groups_default = [
+    {
+      name        = var.user_group_name
+      description = var.user_group_description
+      precedence  = var.user_group_precedence
+      role_arn    = var.user_group_role_arn
+
+    }
+  ]
+
+  # This parses var.user_groups which is a list of objects (map), and transforms it to a tuple of elements to avoid conflict with  the ternary and local.groups_default
+  groups_parsed = [for e in var.user_groups : {
+    name        = lookup(e, "name", null)
+    description = lookup(e, "description", null)
+    precedence  = lookup(e, "precedence", null)
+    role_arn    = lookup(e, "role_arn", null)
+    }
+  ]
+
+  groups = length(var.user_groups) == 0 && (var.user_group_name == null || var.user_group_name == "") ? [] : (length(var.user_groups) > 0 ? local.groups_parsed : local.groups_default)
+
+}
+
+
+####################################################################################
+
+resource "aws_cognito_user" "users" {
+  for_each = var.users
+
+  user_pool_id             = aws_cognito_user_pool.user_pool.*.id[0]
+  username                 = each.value.email
+  desired_delivery_mediums = ["EMAIL"]
+
+  attributes = {
+    email          = each.value.email
+    email_verified = true
+  }
+
+  validation_data = {
+    email = each.value.email
+  }
+
+  # depends_on = [aws_lambda_function.pre_sign_up, aws_lambda_permission.pre_sign_up]
 }
