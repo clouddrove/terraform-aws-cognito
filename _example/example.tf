@@ -10,7 +10,11 @@ module "cognito" {
   label_order = ["environment", "name"]
 
   enabled = true
-  cognito_domain = "cd-es-cog"
-  region = "eu-west-1"
-  software_token_enabled = false
+  allow_admin_create_user_only          = false
+  advanced_security_mode                = "ENFORCED"
+  cognito_domain                        = "test"
+  region                                = "eu-west-1"
+  software_token_enabled                = true
+  mfa_configuration                     = "ON"
+  
 }

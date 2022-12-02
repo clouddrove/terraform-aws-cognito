@@ -1,9 +1,9 @@
 output "cognito_map" {
   description = "cognito info"
-  value       = { "user_pool"        = aws_cognito_user_pool.user_pool.*.id[0]
-    "identity_pool"    = aws_cognito_identity_pool.identity_pool.*.id[0]
-    "auth_arn"         = module.auth-role.arn
-    "domain"           = format("%s.auth.%s.amazoncognito.com",aws_cognito_user_pool_domain.user_pool_domain.*.domain[0],var.region)
+  value = { "user_pool" = aws_cognito_user_pool.user_pool.*.id[0]
+    "identity_pool" = aws_cognito_identity_pool.identity_pool.*.id[0]
+    "auth_arn"      = module.auth-role.arn
+    "domain"        = format("%s.auth.%s.amazoncognito.com", aws_cognito_user_pool_domain.user_pool_domain.*.domain[0], var.region)
   }
 }
 
