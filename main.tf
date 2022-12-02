@@ -13,7 +13,7 @@ module "labels" {
 module "auth-role" {
   source = "git::https://github.com/clouddrove/terraform-aws-iam-role.git?ref=tags/0.14.0"
 
-  name        = format("%s-auth-role",module.labels.id)
+  name        = format("%s-auth-role", module.labels.id)
   environment = var.environment
   label_order = ["name"]
   enabled     = var.enabled
@@ -53,8 +53,8 @@ data "aws_iam_policy_document" "authenticated_assume" {
 
 data "aws_iam_policy_document" "authenticated" {
   statement {
-    effect  = "Allow"
-    actions = ["mobileanalytics:PutEvents","cognito-sync:*","es:*"]
+    effect    = "Allow"
+    actions   = ["mobileanalytics:PutEvents", "cognito-sync:*", "es:*"]
     resources = ["*"]
   }
 }
@@ -62,10 +62,10 @@ data "aws_iam_policy_document" "authenticated" {
 module "unauth-role" {
   source = "git::https://github.com/clouddrove/terraform-aws-iam-role.git?ref=tags/0.14.0"
 
-  name        = format("%s-unauth-role",module.labels.id)
-  environment = var.environment
-  label_order = ["name"]
-  enabled     = var.enabled
+  name               = format("%s-unauth-role", module.labels.id)
+  environment        = var.environment
+  label_order        = ["name"]
+  enabled            = var.enabled
   assume_role_policy = data.aws_iam_policy_document.unauthenticated_assume.json
 
   policy_enabled = true
@@ -101,17 +101,17 @@ data "aws_iam_policy_document" "unauthenticated_assume" {
 
 data "aws_iam_policy_document" "unauthenticated" {
   statement {
-    effect  = "Allow"
-    actions = ["mobileanalytics:PutEvents","cognito-sync:*","es:*"]
+    effect    = "Allow"
+    actions   = ["mobileanalytics:PutEvents", "cognito-sync:*", "es:*"]
     resources = ["*"]
   }
 }
 
 resource "aws_cognito_identity_pool_roles_attachment" "identity_pool" {
-  count = var.enabled ? 1 : 0
+  count            = var.enabled ? 1 : 0
   identity_pool_id = aws_cognito_identity_pool.identity_pool.*.id[0]
   roles = {
-    "authenticated" = module.auth-role.arn
+    "authenticated"   = module.auth-role.arn
     "unauthenticated" = module.unauth-role.arn
   }
 }
@@ -126,8 +126,8 @@ locals {
 resource "aws_cognito_user_pool" "user_pool" {
   count = var.module_enabled ? 1 : 0
 
-  name                     = module.labels.id
-  alias_attributes         = var.alias_attributes != null ? var.alias_attributes : local.alias_attributes
+  name             = module.labels.id
+  alias_attributes = var.alias_attributes != null ? var.alias_attributes : local.alias_attributes
   # username_attributes      = var.username_attributes
   auto_verified_attributes = var.auto_verified_attributes
 
@@ -290,29 +290,29 @@ resource "aws_cognito_user_pool" "user_pool" {
 }
 
 resource "aws_cognito_user_pool_client" "client" {
-  count                 = var.enabled ? 1 : 0
-  name = format("%s_user_client", module.labels.id)
+  count = var.enabled ? 1 : 0
+  name  = format("%s_user_client", module.labels.id)
 
-  user_pool_id = aws_cognito_user_pool.user_pool.*.id[0]
+  user_pool_id        = aws_cognito_user_pool.user_pool.*.id[0]
   explicit_auth_flows = ["ADMIN_NO_SRP_AUTH"]
 }
 
 resource "aws_cognito_user_pool_domain" "user_pool_domain" {
-  count                 = var.enabled ? 1 : 0
-  domain       = var.cognito_domain
-  user_pool_id = aws_cognito_user_pool.user_pool.*.id[0]
+  count           = var.enabled ? 1 : 0
+  domain          = var.cognito_domain
+  user_pool_id    = aws_cognito_user_pool.user_pool.*.id[0]
   certificate_arn = var.certificate_arn
 }
 
 resource "aws_cognito_identity_pool" "identity_pool" {
-  count                 = var.enabled ? 1 : 0
+  count                            = var.enabled ? 1 : 0
   identity_pool_name               = format("%s_identity_pool", module.labels.id)
   allow_unauthenticated_identities = false
 
   cognito_identity_providers {
-    client_id       = aws_cognito_user_pool_client.client.*.id[0]
-    provider_name   = aws_cognito_user_pool.user_pool.*.endpoint[0]
+    client_id     = aws_cognito_user_pool_client.client.*.id[0]
+    provider_name = aws_cognito_user_pool.user_pool.*.endpoint[0]
   }
 
-  lifecycle {ignore_changes = [cognito_identity_providers]}
+  lifecycle { ignore_changes = [cognito_identity_providers] }
 }

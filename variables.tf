@@ -11,13 +11,13 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
@@ -29,7 +29,7 @@ variable "delimiter" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -53,19 +53,19 @@ variable "repository" {
 }
 
 variable "alias_attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Attributes supported as an alias for this user pool. Valid values: phone_number, email, or preferred_username. Conflicts with username_attributes."
 }
 
 variable "auto_verified_attributes" {
-  type        = list
+  type        = list(any)
   default     = ["email"]
   description = "Attributes to be auto-verified. Valid values: email, phone_number."
 }
 
 variable "username_attributes" {
-  type        = list
+  type        = list(any)
   default     = ["email"]
   description = "Whether email addresses or phone numbers can be specified as usernames when a user signs up. Conflicts with alias_attributes."
 }
@@ -164,8 +164,8 @@ variable "allow_admin_create_user_only" {
 }
 
 variable "aws_cognito_user_group_name" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "(optional) describe your variable"
 }
 
@@ -267,8 +267,8 @@ variable "default_client_id_token_validity" {
 
 variable "default_client_token_validity_units" {
   description = "(Optional) Configuration block for units in which the validity times are represented in."
-  type    = any
-  default = null
+  type        = any
+  default     = null
 }
 
 variable "default_client_enable_token_revocation" {
@@ -298,7 +298,7 @@ variable "invite_sms_message" {
 variable "account_recovery_mechanisms" {
   type        = any
   description = "(Optional) A list of recovery_mechanisms which are defined by a `name` and its `priority`. Valid values for `name` are veri  fied_email, verified_phone_number, and admin_only."
-  default = []
+  default     = []
 }
 
 variable "challenge_required_on_new_device" {
@@ -442,7 +442,7 @@ variable "lambda_verify_auth_challenge_response" {
 variable "schema_attributes" {
   description = "(Optional) A list of schema attributes of a user pool. You can add a maximum of 25 custom attributes."
   type        = any
-  default = []
+  default     = []
 }
 
 variable "sms_configuration" {
