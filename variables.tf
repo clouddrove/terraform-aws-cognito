@@ -302,7 +302,7 @@ variable "client_logout_urls" {
 variable "client_read_attributes" {
   description = "(Optional) List of Cognito User Pool attributes the application client can read from."
   type        = list(string)
-  default     = null
+  default     = ["address", "birthdate", "email", "email_verified", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "phone_number_verified", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo"]
 }
 
 variable "client_refresh_token_validity" {
@@ -333,7 +333,7 @@ variable "identity_providers" {
 variable "client_write_attributes" {
   description = "(Optional) List of Cognito User Pool attributes the application client can write to."
   type        = list(string)
-  default     = null
+  default     = ["address", "birthdate", "email", "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number", "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo"]
 }
 
 variable "client_access_token_validity" {
