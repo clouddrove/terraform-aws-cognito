@@ -1,13 +1,20 @@
+# Managed By : CloudDrove
+# Description : This Script is used to create VPC, Internet Gateway and Flow log.
+# Copyright @ CloudDrove. All Right Reserved.
+
+#Module      : labels
+#Description : This terraform module is designed to generate consistent label names and tags
+#              for resources. You can use terraform-labels to implement a strict naming
+#              convention.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.14.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
 
   name        = var.name
   environment = var.environment
-  attributes  = var.attributes
-  repository  = var.repository
-  label_order = var.label_order
   managedby   = var.managedby
-  enabled     = var.enabled
+  label_order = var.label_order
+  repository  = var.repository
 }
 
 module "auth-role" {
@@ -116,6 +123,10 @@ resource "aws_cognito_identity_pool_roles_attachment" "identity_pool" {
   }
 }
 
+# --------------------------------------------------------------------------
+# Cognito - User Pool
+# --------------------------------------------------------------------------
+
 locals {
   alias_attributes = var.alias_attributes == null && var.username_attributes == null ? [
     "email",
@@ -124,81 +135,38 @@ locals {
 }
 
 resource "aws_cognito_user_pool" "user_pool" {
-  count = var.module_enabled ? 1 : 0
-
+  count            = var.enabled ? 1 : 0
   name             = module.labels.id
   alias_attributes = var.alias_attributes != null ? var.alias_attributes : local.alias_attributes
-  # username_attributes      = var.username_attributes
-  auto_verified_attributes = var.auto_verified_attributes
 
-  sms_authentication_message = var.sms_authentication_message
+  account_recovery_setting {
+    recovery_mechanism {
+      name     = "verified_email"
+      priority = 1
+    }
 
-  mfa_configuration = var.mfa_configuration
-
-  deletion_protection = var.deletion_protection
-
-  password_policy {
-    minimum_length                   = var.password_minimum_length
-    require_lowercase                = var.password_require_lowercase
-    require_numbers                  = var.password_require_numbers
-    require_symbols                  = var.password_require_symbols
-    require_uppercase                = var.password_require_uppercase
-    temporary_password_validity_days = var.temporary_password_validity_days
-  }
-
-  dynamic "account_recovery_setting" {
-    for_each = length(var.account_recovery_mechanisms) > 0 ? [true] : []
-
-    content {
-      dynamic "recovery_mechanism" {
-        for_each = var.account_recovery_mechanisms
-        iterator = recovery
-
-        content {
-          name     = recovery.value.name
-          priority = recovery.value.priority
-        }
-      }
+    recovery_mechanism {
+      name     = "verified_phone_number"
+      priority = 2
     }
   }
-
-  dynamic "device_configuration" {
-    for_each = contains(["ALWAYS", "USER_OPT_IN"], upper(var.user_device_tracking)) ? [true] : []
-
-    content {
-      device_only_remembered_on_user_prompt = var.user_device_tracking == "USER_OPT_IN"
-      challenge_required_on_new_device      = var.challenge_required_on_new_device
-    }
-  }
-
-  dynamic "software_token_mfa_configuration" {
-    for_each = var.allow_software_mfa_token ? [true] : []
-
-    content {
-      enabled = false
-    }
-  }
-
-  username_configuration {
-    case_sensitive = var.enable_username_case_sensitivity
-  }
-
-  email_configuration {
-    email_sending_account  = var.email_sending_account
-    reply_to_email_address = var.email_reply_to_address
-    source_arn             = var.email_source_arn
-    from_email_address     = var.email_from_address
-  }
-
-  # The configuration for AdminCreateUser
-  # https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminCreateUser.html.
   admin_create_user_config {
-    allow_admin_create_user_only = var.allow_admin_create_user_only
-
+    allow_admin_create_user_only = true
     invite_message_template {
-      email_subject = var.invite_email_subject
-      email_message = var.invite_email_message
-      sms_message   = var.invite_sms_message
+      email_message = <<EOF
+        Hi,
+        <p>
+        A new account for <strong>${var.name}</strong> has been created for you.
+        </p>
+        <p></p>
+        <p>Username: {username}</p>
+        <p>Temporary password: {####}</p>
+        <p></p>
+        <p>Please login and change your password.</p>
+        <p>Have a nice day :)</p>
+        EOF
+      email_subject = "Sign up for x-check"
+      sms_message   = "Your username is {username}. Sign up at {####} "
     }
   }
 
@@ -262,38 +230,38 @@ resource "aws_cognito_user_pool" "user_pool" {
     }
   }
 
-  dynamic "sms_configuration" {
-    for_each = var.sms_configuration != null ? [var.sms_configuration] : []
+  auto_verified_attributes = var.auto_verified_attributes
+  mfa_configuration        = var.mfa_configuration
+  #   username_attributes = var.username_attributes
 
-    content {
-      external_id    = lookup(var.sms_configuration, "external_id", null)
-      sns_caller_arn = lookup(var.sms_configuration, "sns_caller_arn", null)
-    }
-  }
-
-  # Advanced Security Features
-  # Note: Additional pricing applies for Amazon Cognito advanced security features. For details please see:
-  # https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html
   user_pool_add_ons {
     advanced_security_mode = var.advanced_security_mode
   }
 
-  verification_message_template {
-    default_email_option  = var.default_email_option
-    email_subject         = var.email_subject
-    email_message         = var.email_message
-    email_subject_by_link = var.email_subject_by_link
-    email_message_by_link = var.email_message_by_link
-    sms_message           = var.sms_message
-  }
 
+  username_configuration {
+    case_sensitive = var.case_sensitive
+  }
+  email_configuration {
+    email_sending_account = "COGNITO_DEFAULT"
+  }
+  sms_authentication_message = var.sms_authentication_message
+
+  password_policy {
+    minimum_length                   = var.minimum_length
+    require_lowercase                = var.require_lowercase
+    require_numbers                  = var.require_numbers
+    require_symbols                  = var.require_symbols
+    require_uppercase                = var.require_uppercase
+    temporary_password_validity_days = var.temporary_password_validity_days
+  }
   tags       = merge(module.labels.tags)
   depends_on = [var.module_depends_on]
 }
 
-##############################################################################################################
-# client
-##############################################################################################################
+# --------------------------------------------------------------------------
+# Cognito - Client
+# --------------------------------------------------------------------------
 
 resource "aws_cognito_user_pool_client" "client" {
   count                                = var.enabled ? length(local.clients) : 0
@@ -385,8 +353,9 @@ locals {
 
 
 
-##############################################################################################################
-##############################################################################################################
+# --------------------------------------------------------------------------
+# Cognito - Domain
+# --------------------------------------------------------------------------
 
 resource "aws_cognito_user_pool_domain" "domain" {
   count           = !var.enabled || var.domain == null || var.domain == "" ? 0 : 1
@@ -409,7 +378,9 @@ resource "aws_cognito_identity_pool" "identity_pool" {
 }
 
 
-##################################################################################################################
+# --------------------------------------------------------------------------
+# Cognito - User Group
+# --------------------------------------------------------------------------
 
 
 resource "aws_cognito_user_group" "main" {
@@ -446,8 +417,9 @@ locals {
 }
 
 
-####################################################################################
-
+# --------------------------------------------------------------------------
+# Cognito - Users
+# --------------------------------------------------------------------------
 resource "aws_cognito_user" "users" {
   for_each = var.users
 
@@ -463,6 +435,5 @@ resource "aws_cognito_user" "users" {
   validation_data = {
     email = each.value.email
   }
-
-  # depends_on = [aws_lambda_function.pre_sign_up, aws_lambda_permission.pre_sign_up]
 }
+
