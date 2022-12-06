@@ -1,5 +1,5 @@
 # Managed By : CloudDrove
-# Description : This Script is used to create VPC, Internet Gateway and Flow log.
+# Description : This Script is used to create AWS Cognito.
 # Copyright @ CloudDrove. All Right Reserved.
 
 #Module      : labels
@@ -293,11 +293,6 @@ resource "aws_cognito_user_pool_client" "client" {
       refresh_token = lookup(token_validity_units.value, "refresh_token", null)
     }
   }
-
-  # depends_on = [
-  #   aws_cognito_resource_server.resource,
-  #   aws_cognito_identity_provider.identity_provider
-  # ]
 }
 
 locals {
@@ -368,12 +363,6 @@ resource "aws_cognito_identity_pool" "identity_pool" {
   count                            = var.enabled ? 1 : 0
   identity_pool_name               = format("%s_identity_pool", module.labels.id)
   allow_unauthenticated_identities = false
-
-  # cognito_identity_providers {
-  #   client_id     = aws_cognito_user_pool_client.client.*.id[0]
-  #   provider_name = aws_cognito_user_pool.user_pool.*.endpoint[0]
-  # }
-
   lifecycle { ignore_changes = [cognito_identity_providers] }
 }
 
