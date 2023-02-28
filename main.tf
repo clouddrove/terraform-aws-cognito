@@ -238,6 +238,14 @@ resource "aws_cognito_user_pool" "user_pool" {
     advanced_security_mode = var.advanced_security_mode
   }
 
+  # software_token_mfa_configuration
+  dynamic "software_token_mfa_configuration" {
+    for_each = var.allow_software_mfa_token ? [true] : []
+
+    content {
+      enabled = true
+    }
+  }
 
   username_configuration {
     case_sensitive = var.case_sensitive
