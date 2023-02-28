@@ -75,6 +75,12 @@ variable "mfa_configuration" {
   description = "Multi-Factor Authentication (MFA) configuration for the User Pool. Defaults of OFF. Valid values are OFF, ON and OPTIONAL."
 }
 
+variable "allow_software_mfa_token" {
+  description = "(Optional) Boolean whether to enable software token Multi-Factor (MFA) tokens, such as Time-based One-Time Password (TOTP). To disable software token MFA when 'sms_configuration' is not present, the 'mfa_configuration' argument must be set to OFF and the 'software_token_mfa_configuration' configuration block must be fully removed."
+  type        = bool
+  default     = true
+}
+
 variable "advanced_security_mode" {
   type        = string
   default     = "OFF"

@@ -13,7 +13,8 @@ module "cognito" {
   allow_admin_create_user_only          = false
   advanced_security_mode                = "OFF"
   domain                                = "test"
-  mfa_configuration                     = "OFF"
+  mfa_configuration                     = "ON"
+  allow_software_mfa_token              = true  
   deletion_protection                   = "INACTIVE"
   users = {
             user01 = {
