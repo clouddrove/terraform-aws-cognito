@@ -165,7 +165,7 @@ resource "aws_cognito_user_pool" "user_pool" {
         <p>Please login and change your password.</p>
         <p>Have a nice day :)</p>
         EOF
-      email_subject = "Sign up for x-check"
+      email_subject = var.email_subject
       sms_message   = "Your username is {username}. Sign up at {####} "
     }
   }

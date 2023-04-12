@@ -372,6 +372,12 @@ variable "client_name" {
   default     = null
 }
 
+variable "email_subject" {
+  description = "The name of the email subject"
+  type        = string
+  default     = "Sign up for <project_name>."
+}
+
 variable "clients" {
   description = "A container with the clients definitions"
   type        = any

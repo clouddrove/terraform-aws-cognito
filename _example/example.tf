@@ -16,6 +16,7 @@ module "cognito" {
   mfa_configuration                     = "ON"
   allow_software_mfa_token              = true  
   deletion_protection                   = "INACTIVE"
+  email_subject                         =  "Sign up for <project_name>."
   users = {
             user01 = {
               email = "test01@test.com"
