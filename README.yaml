@@ -8,7 +8,7 @@
 name: Terraform AWS Cognito
 
 # License of this project
-license: "MIT"
+license: "APACHE"
 
 # Canonical GitHub repo
 github_repo: clouddrove/terraform-aws-cognito
@@ -16,11 +16,17 @@ github_repo: clouddrove/terraform-aws-cognito
 # Badges to display
 badges:
   - name: "Terraform"
-    image: "https://img.shields.io/badge/terraform-v0.14-green"
+    image: "https://img.shields.io/badge/Terraform-v1.1.7-green"
     url: "https://www.terraform.io"
   - name: "Licence"
-    image: "https://img.shields.io/badge/License-MIT-blue.svg"
+    image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
+  - name: "static-checks"
+    image: "https://github.com/clouddrove/terraform-aws-cognito/actions/workflows/terraform.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-aws-cognito/actions/workflows/terraform.yml"
+  - name: "tfsec"
+    image: "https://github.com/clouddrove/terraform-aws-cognito/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-aws-cognito/actions/workflows/tfsec.yml"
 
 #  description of this project
 description: |-
@@ -33,15 +39,16 @@ include:
 # How to use this project
 # yamllint disable rule:line-length
 usage: |-
+  ### Simple Example
   Here are examples of how you can use this module in your inventory structure:
-  ```hcl
-      module "cognito" {
+    ```hcl
+    module "cognito" {
       source                                  = "./../"
-
+  
       name                                    = "cognito"
       environment                             = "test"
       label_order                             = ["environment", "name"]
-
+  
       enabled = true
       allow_admin_create_user_only            = false
       advanced_security_mode                  = "OFF"
@@ -76,4 +83,4 @@ usage: |-
         }
       ]
     }
-  ```
+    ```
