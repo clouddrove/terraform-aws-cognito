@@ -34,22 +34,27 @@ jobs:
           - _example/
 
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Auth Gcp
-        uses: google-github-actions/auth@v1
+      - name: Install Terraform v${{ matrix.version }}
+        uses: hashicorp/setup-terraform@v1
         with:
-          credentials_json: ${{ secrets.GKE_KEY }}
+          terraform_version: ${{ matrix.version }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+      - name: 'Configure AWS Credentials'
+        uses: clouddrove/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.TEST_AWS_ACCESS_SECRET_KEY }}
+          aws-region: us-east-2
 
       - name: Init & validate v${{ matrix.version }}
         run: |
           cd ${{ matrix.directory }}
           terraform init
           terraform validate
+          terraform plan -input=false -no-color
 
       - name: tflint
         uses: reviewdog/action-tflint@master
