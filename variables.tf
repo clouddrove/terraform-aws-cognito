@@ -406,6 +406,12 @@ variable "domain_certificate_arn" {
   default     = null
 }
 
+variable "allow_unauthenticated_identities" {
+  description = "Whether the identity pool supports unauthenticated logins or not."
+  type        = bool
+  default     = false
+}
+
 #########################################################################################################################################
 ### User Group
 #########################################################################################################################################
@@ -454,6 +460,11 @@ variable "users" {
   )
 }
 
+variable "desired_delivery_mediums" {
+  description = "A list of mediums to the welcome message will be sent through. Allowed values are `EMAIL` and `SMS`. If it's provided, make sure you have also specified `email` attribute for the `EMAIL` medium and `phone_number` for the `SMS`. More than one value can be specified."
+  type        = list(string)
+  default     = ["EMAIL"]
+}
 
 #########################################################################################################################################
 ### Deletion Protection
@@ -463,4 +474,14 @@ variable "deletion_protection" {
   description = "When active, DeletionProtection prevents accidental deletion of your user pool. Before you can delete a user pool that you have protected against deletion, you must deactivate this feature. Valid values are `ACTIVE` and `INACTIVE`."
   type        = string
   default     = "INACTIVE"
+}
+
+#########################################################################################################################################
+# Resource Server
+#########################################################################################################################################
+
+variable "resource_servers" {
+  description = "A list of Resource Server configuration."
+  type        = list(any)
+  default     = []
 }

@@ -67,8 +67,8 @@ data "aws_iam_policy_document" "authenticated" {
 }
 
 module "unauth-role" {
-  source      = "clouddrove/iam-role/aws"
-  version     = "1.3.0"
+  source  = "clouddrove/iam-role/aws"
+  version = "1.3.0"
 
   name               = format("%s-unauth-role", module.labels.id)
   environment        = var.environment
@@ -356,7 +356,6 @@ locals {
 }
 
 
-
 # --------------------------------------------------------------------------
 # Cognito - Domain
 # --------------------------------------------------------------------------
@@ -371,7 +370,7 @@ resource "aws_cognito_user_pool_domain" "domain" {
 resource "aws_cognito_identity_pool" "identity_pool" {
   count                            = var.enabled ? 1 : 0
   identity_pool_name               = format("%s_identity_pool", module.labels.id)
-  allow_unauthenticated_identities = false
+  allow_unauthenticated_identities = var.allow_unauthenticated_identities
   lifecycle { ignore_changes = [cognito_identity_providers] }
 }
 
@@ -379,7 +378,6 @@ resource "aws_cognito_identity_pool" "identity_pool" {
 # --------------------------------------------------------------------------
 # Cognito - User Group
 # --------------------------------------------------------------------------
-
 
 resource "aws_cognito_user_group" "main" {
   count        = var.enabled ? length(local.groups) : 0
@@ -423,7 +421,7 @@ resource "aws_cognito_user" "users" {
 
   user_pool_id             = aws_cognito_user_pool.user_pool.*.id[0]
   username                 = each.value.email
-  desired_delivery_mediums = ["EMAIL"]
+  desired_delivery_mediums = var.desired_delivery_mediums
 
   attributes = {
     email          = each.value.email
@@ -435,3 +433,26 @@ resource "aws_cognito_user" "users" {
   }
 }
 
+# --------------------------------------------------------------------------
+# Cognito - Resource Servers
+# --------------------------------------------------------------------------
+locals {
+  resource_servers = var.resource_servers == null ? [] : var.resource_servers
+}
+
+resource "aws_cognito_resource_server" "resource_servers" {
+  count      = var.enabled ? length(local.resource_servers) : 0
+  name       = lookup(element(local.resource_servers, count.index), "name")
+  identifier = lookup(element(local.resource_servers, count.index), "identifier")
+
+  #scope
+  dynamic "scope" {
+    for_each = lookup(element(local.resource_servers, count.index), "scope")
+    content {
+      scope_name        = lookup(scope.value, "scope_name")
+      scope_description = lookup(scope.value, "scope_description")
+    }
+  }
+
+  user_pool_id = aws_cognito_user_pool.user_pool.*.id[0]
+}
