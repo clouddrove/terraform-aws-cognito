@@ -9,14 +9,12 @@ module "cognito" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  enabled                      = true
-  allow_admin_create_user_only = false
-  advanced_security_mode       = "OFF"
-  domain                       = "clouddrove"
-  mfa_configuration            = "ON"
-  allow_software_mfa_token     = true
-  deletion_protection          = "INACTIVE"
-  email_subject                = "Sign up for <project_name>."
+  enabled                  = true
+  advanced_security_mode   = "OFF"
+  domain                   = "clouddrove"
+  mfa_configuration        = "ON"
+  allow_software_mfa_token = true
+  email_subject            = "Sign up for <project_name>."
 
   users = {
     user01 = {
