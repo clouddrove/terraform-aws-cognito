@@ -155,7 +155,7 @@ resource "aws_cognito_user_pool" "user_pool" {
   admin_create_user_config {
     allow_admin_create_user_only = true
     invite_message_template {
-      email_message = <<EOF
+      email_message = var.email_message != "" ? var.email_message : <<EOF
         Hi,
         <p>
         A new account for <strong>${var.name}</strong> has been created for you.
