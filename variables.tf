@@ -30,22 +30,10 @@ variable "managedby" {
   description = "ManagedBy, eg 'CloudDrove'"
 }
 
-variable "attributes" {
-  type        = list(any)
-  default     = []
-  description = "Additional attributes (e.g. `1`)."
-}
-
 variable "enabled" {
   type        = bool
   default     = true
   description = "Flag to control the cognito creation."
-}
-
-variable "tags" {
-  type        = map(any)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 #Module      : User Pool
@@ -102,14 +90,6 @@ variable "case_sensitive" {
 ################################################
 ## Admin Create USer
 ################################################
-
-#### Password
-
-variable "allow_admin_create_user_only" {
-  type        = bool
-  description = "(Optional) Set to True if only the administrator is allowed to create user profiles. Set to False if users can sign themselves up via an app."
-  default     = true
-}
 
 variable "minimum_length" {
   type        = number
@@ -329,13 +309,6 @@ variable "client_supported_identity_providers" {
   default     = null
 }
 
-variable "identity_providers" {
-  description = "Cognito Pool Identity Providers"
-  type        = list(any)
-  default     = []
-  sensitive   = true
-}
-
 variable "client_write_attributes" {
   description = "(Optional) List of Cognito User Pool attributes the application client can write to."
   type        = list(string)
@@ -406,6 +379,12 @@ variable "domain_certificate_arn" {
   default     = null
 }
 
+variable "allow_unauthenticated_identities" {
+  description = "Whether the identity pool supports unauthenticated logins or not."
+  type        = bool
+  default     = false
+}
+
 #########################################################################################################################################
 ### User Group
 #########################################################################################################################################
@@ -454,13 +433,18 @@ variable "users" {
   )
 }
 
+variable "desired_delivery_mediums" {
+  description = "A list of mediums to the welcome message will be sent through. Allowed values are `EMAIL` and `SMS`. If it's provided, make sure you have also specified `email` attribute for the `EMAIL` medium and `phone_number` for the `SMS`. More than one value can be specified."
+  type        = list(string)
+  default     = ["EMAIL"]
+}
 
 #########################################################################################################################################
-### Deletion Protection
+# Resource Server
 #########################################################################################################################################
 
-variable "deletion_protection" {
-  description = "When active, DeletionProtection prevents accidental deletion of your user pool. Before you can delete a user pool that you have protected against deletion, you must deactivate this feature. Valid values are `ACTIVE` and `INACTIVE`."
-  type        = string
-  default     = "INACTIVE"
+variable "resource_servers" {
+  description = "A list of Resource Server configuration."
+  type        = list(any)
+  default     = []
 }
