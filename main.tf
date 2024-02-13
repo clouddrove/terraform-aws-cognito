@@ -10,6 +10,7 @@ module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"
 
+  enabled     = var.enabled
   name        = var.name
   environment = var.environment
   managedby   = var.managedby
@@ -44,7 +45,7 @@ data "aws_iam_policy_document" "authenticated_assume" {
       variable = "cognito-identity.amazonaws.com:aud"
 
       values = [
-        aws_cognito_identity_pool.identity_pool[*].id[0],
+        aws_cognito_identity_pool.identity_pool[0].id,
       ]
     }
     condition {
@@ -93,7 +94,7 @@ data "aws_iam_policy_document" "unauthenticated_assume" {
       variable = "cognito-identity.amazonaws.com:aud"
 
       values = [
-        aws_cognito_identity_pool.identity_pool[*].id[0],
+        aws_cognito_identity_pool.identity_pool[0].id,
       ]
     }
     condition {
@@ -117,7 +118,7 @@ data "aws_iam_policy_document" "unauthenticated" {
 
 resource "aws_cognito_identity_pool_roles_attachment" "identity_pool" {
   count            = var.enabled ? 1 : 0
-  identity_pool_id = aws_cognito_identity_pool.identity_pool[*].id[0]
+  identity_pool_id = aws_cognito_identity_pool.identity_pool[0].id
   roles = {
     "authenticated"   = module.auth-role.arn
     "unauthenticated" = module.unauth-role.arn
@@ -292,7 +293,7 @@ resource "aws_cognito_user_pool_client" "client" {
   prevent_user_existence_errors        = lookup(element(local.clients, count.index), "prevent_user_existence_errors", null)
   write_attributes                     = lookup(element(local.clients, count.index), "write_attributes", null)
   enable_token_revocation              = lookup(element(local.clients, count.index), "enable_token_revocation", null)
-  user_pool_id                         = aws_cognito_user_pool.user_pool[*].id[0]
+  user_pool_id                         = aws_cognito_user_pool.user_pool[0].id
 
   # token_validity_units
   dynamic "token_validity_units" {
@@ -362,7 +363,7 @@ resource "aws_cognito_user_pool_domain" "domain" {
   count           = !var.enabled || var.domain == null || var.domain == "" ? 0 : 1
   domain          = var.domain
   certificate_arn = var.domain_certificate_arn
-  user_pool_id    = aws_cognito_user_pool.user_pool[*].id[0]
+  user_pool_id    = aws_cognito_user_pool.user_pool[0].id
 }
 
 resource "aws_cognito_identity_pool" "identity_pool" {
@@ -381,7 +382,7 @@ resource "aws_cognito_user_group" "main" {
   description  = lookup(element(local.groups, count.index), "description")
   precedence   = lookup(element(local.groups, count.index), "precedence")
   role_arn     = lookup(element(local.groups, count.index), "role_arn")
-  user_pool_id = aws_cognito_user_pool.user_pool[*].id[0]
+  user_pool_id = aws_cognito_user_pool.user_pool[0].id
 }
 
 locals {
@@ -413,7 +414,7 @@ locals {
 resource "aws_cognito_user" "users" {
   for_each = var.users
 
-  user_pool_id             = aws_cognito_user_pool.user_pool[*].id[0]
+  user_pool_id             = aws_cognito_user_pool.user_pool[0].id
   username                 = each.value.email
   desired_delivery_mediums = var.desired_delivery_mediums
 
@@ -448,5 +449,5 @@ resource "aws_cognito_resource_server" "resource_servers" {
     }
   }
 
-  user_pool_id = aws_cognito_user_pool.user_pool[*].id[0]
+  user_pool_id = aws_cognito_user_pool.user_pool[0].id
 }
