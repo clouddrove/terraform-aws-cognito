@@ -87,6 +87,11 @@ variable "case_sensitive" {
   description = "Whether username case sensitivity will be applied for all users in the user pool through Cognito APIs."
 }
 
+variable "email_message" {
+  type    = string
+  default = ""
+}
+
 ################################################
 ## Admin Create USer
 ################################################
