@@ -158,17 +158,16 @@ resource "aws_cognito_user_pool" "user_pool" {
       email_message = <<EOF
         Hi,
         <p>
-        A new account for <strong>xcheck-reporting</strong> has been created for you.
+        A new account for <strong>${var.name}</strong> has been created for you.
         </p>
         <p></p>
         <p>Username: {username}</p>
         <p>Temporary password: {####}</p>
         <p></p>
         <p>Please login and change your password.</p>
-        <p><a href="https://reporting.x-check.net">https://reporting.x-check.net</a>        
         <p>Have a nice day :)</p>
         EOF
-      email_subject = "Sign up for x-check"
+      email_subject = var.email_subject
       sms_message   = "Your username is {username}. Sign up at {####} "
     }
   }
