@@ -30,6 +30,9 @@ module "auth-role" {
 
   policy_enabled = true
   policy         = data.aws_iam_policy_document.authenticated.json
+
+  managedby = var.managedby
+  repository  = var.repository
 }
 
 data "aws_iam_policy_document" "authenticated_assume" {
@@ -79,6 +82,9 @@ module "unauth-role" {
 
   policy_enabled = true
   policy         = data.aws_iam_policy_document.unauthenticated.json
+
+  managedby = var.managedby
+  repository  = var.repository  
 }
 
 data "aws_iam_policy_document" "unauthenticated_assume" {
