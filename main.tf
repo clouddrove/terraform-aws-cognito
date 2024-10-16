@@ -159,22 +159,11 @@ resource "aws_cognito_user_pool" "user_pool" {
     }
   }
   admin_create_user_config {
-    allow_admin_create_user_only = true
+    allow_admin_create_user_only = var.admin_create_user_config.allow_admin_create_user_only
     invite_message_template {
-      email_message = var.email_message != "" ? var.email_message : <<EOF
-        Hi,
-        <p>
-        A new account for <strong>${var.name}</strong> has been created for you.
-        </p>
-        <p></p>
-        <p>Username: {username}</p>
-        <p>Temporary password: {####}</p>
-        <p></p>
-        <p>Please login and change your password.</p>
-        <p>Have a nice day :)</p>
-        EOF
-      email_subject = var.email_subject
-      sms_message   = "Your username is {username}. Sign up at {####} "
+      email_message = var.admin_create_user_config.email_message
+      email_subject = var.admin_create_user_config.email_subject
+      sms_message   = var.admin_create_user_config.sms_message
     }
   }
 

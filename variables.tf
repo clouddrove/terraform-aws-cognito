@@ -92,6 +92,34 @@ variable "email_message" {
   default = ""
 }
 
+variable "admin_create_user_config" {
+  description = "Configuration for admin-created users and their invite message templates."
+  type = object({
+    allow_admin_create_user_only = bool
+    email_message                = string
+    email_subject                = string
+    sms_message                  = string
+  })
+  default = {
+    allow_admin_create_user_only = true
+    email_message = <<EOF
+        Hi,
+        <p>
+        A new account for <strong>xcheck-maintenance</strong> has been created for you.
+        </p>
+        <p></p>
+        <p>Username: {username}</p>
+        <p>Temporary password: {####}</p>
+        <p></p>
+        <p>Please login and change your password.</p>
+<p><a href="https://maintenance.x-check.net/">https://maintenance.x-check.net/</a>  
+        <p>Have a nice day :)</p>
+      EOF
+    email_subject = "Sign up for x-check"
+    sms_message   = "Your username is {username}. Sign up at {####} "
+  }
+}
+
 ################################################
 ## Admin Create USer
 ################################################
