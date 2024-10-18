@@ -65,7 +65,7 @@
 | user\_group\_role\_arn | The ARN of the IAM role to be associated with the user group | `string` | `null` | no |
 | user\_groups | A container with the user\_groups definitions | `list(any)` | `[]` | no |
 | username\_attributes | Whether email addresses or phone numbers can be specified as usernames when a user signs up. Conflicts with alias\_attributes. | `list(any)` | <pre>[<br>  "email"<br>]</pre> | no |
-| users | Dynamic list of Cognito Users to create (email) | <pre>map(<br>    object({<br>      email = string<br>    })<br>  )</pre> | n/a | yes |
+| users | Dynamic list of Cognito Users to create (email) | <pre>map(<br>    object({<br>      email = string<br>    })<br>  )</pre> | `{}` | no |
 
 ## Outputs
 
