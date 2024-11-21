@@ -37,7 +37,7 @@ variable "enabled" {
 }
 
 #Module      : User Pool
-#Description : 
+#Description :
 
 variable "alias_attributes" {
   type        = list(any)
