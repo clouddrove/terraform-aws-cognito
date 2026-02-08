@@ -436,7 +436,7 @@ variable "users" {
       email = string
     })
   )
-  default     = {}
+  default = {}
 }
 
 variable "desired_delivery_mediums" {
