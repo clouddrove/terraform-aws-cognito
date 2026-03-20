@@ -75,4 +75,3 @@
 | name | (Required) Name of the application client. |
 | tags | A mapping of tags to assign to the resource. |
 | user\_pool\_id | (Required) User pool the client belongs to. |
-
