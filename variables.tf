@@ -27,7 +27,7 @@ variable "label_order" {
 variable "managedby" {
   type        = string
   default     = "hello@clouddrove.com"
-  description = "ManagedBy, eg 'CloudDrove'"
+  description = "ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'"
 }
 
 variable "enabled" {
@@ -436,7 +436,7 @@ variable "users" {
       email = string
     })
   )
-  default     = {}
+  default = {}
 }
 
 variable "desired_delivery_mediums" {
