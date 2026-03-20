@@ -18,6 +18,12 @@ variable "repository" {
   description = "Terraform current module repo"
 }
 
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
+}
+
 variable "label_order" {
   type        = list(any)
   default     = []
@@ -436,7 +442,7 @@ variable "users" {
       email = string
     })
   )
-  default     = {}
+  default = {}
 }
 
 variable "desired_delivery_mediums" {
