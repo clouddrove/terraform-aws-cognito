@@ -21,7 +21,7 @@ module "labels" {
 
 module "auth-role" {
   source      = "clouddrove/iam-role/aws"
-  version     = "1.3.1"
+  version     = "1.3.3"
   name        = format("%s-auth-role", module.labels.id)
   environment = var.environment
   label_order = ["name"]
@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "authenticated" {
 
 module "unauth-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "1.3.1"
+  version = "1.3.3"
 
   name               = format("%s-unauth-role", module.labels.id)
   environment        = var.environment
