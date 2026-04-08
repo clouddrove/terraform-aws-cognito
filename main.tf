@@ -16,6 +16,7 @@ module "labels" {
   managedby   = var.managedby
   label_order = var.label_order
   repository  = var.repository
+  extra_tags  = var.tags
 }
 
 module "auth-role" {
@@ -375,6 +376,7 @@ resource "aws_cognito_identity_pool" "identity_pool" {
   count                            = var.enabled ? 1 : 0
   identity_pool_name               = format("%s_identity_pool", module.labels.id)
   allow_unauthenticated_identities = var.allow_unauthenticated_identities
+  tags                             = module.labels.tags
   lifecycle { ignore_changes = [cognito_identity_providers] }
 }
 
