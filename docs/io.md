@@ -34,6 +34,7 @@
 | email\_subject | The name of the email subject | `string` | `"Sign up for <project_name>."` | no |
 | enabled | Flag to control the cognito creation. | `bool` | `true` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
+| extra\_tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(string)` | `{}` | no |
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | `[]` | no |
 | lambda\_create\_auth\_challenge | (Optional) The ARN of an AWS Lambda creating an authentication challenge. | `string` | `null` | no |
 | lambda\_custom\_message | (Optional) The ARN of a custom message AWS Lambda trigger. | `string` | `null` | no |
