@@ -275,6 +275,22 @@ resource "aws_cognito_user_pool" "user_pool" {
   tags       = merge(module.labels.tags)
   depends_on = [var.module_depends_on]
 }
+# --------------------------------------------------------------------------
+# Cognito - Federated Identity Providers
+# --------------------------------------------------------------------------
+
+resource "aws_cognito_identity_provider" "identity_provider" {
+  for_each = var.enabled ? var.user_pool_identity_providers : {}
+
+  user_pool_id  = aws_cognito_user_pool.user_pool[0].id
+  provider_name = each.key
+  provider_type = each.value.provider_type
+
+  provider_details = each.value.provider_details
+
+  attribute_mapping = length(each.value.attribute_mapping) > 0 ? each.value.attribute_mapping : null
+  idp_identifiers   = length(each.value.idp_identifiers) > 0 ? each.value.idp_identifiers : null
+}
 
 # --------------------------------------------------------------------------
 # Cognito - Client
@@ -310,6 +326,11 @@ resource "aws_cognito_user_pool_client" "client" {
       refresh_token = lookup(token_validity_units.value, "refresh_token", null)
     }
   }
+
+  depends_on = [
+    aws_cognito_identity_provider.identity_provider
+  ]
+
 }
 
 locals {
