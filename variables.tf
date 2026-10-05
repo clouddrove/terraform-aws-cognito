@@ -374,6 +374,27 @@ variable "module_depends_on" {
   default     = []
 }
 
+variable "prevent_user_existence_errors" {
+  description = "Enable Cognito prevent user existence errors to avoid user enumeration"
+  type        = string
+  default     = "ENABLED"
+}
+
+#########################################################################################################################################
+### Federated Identity Providers
+#########################################################################################################################################
+variable "user_pool_identity_providers" {
+  description = "Map of federated identity providers to configure for the Cognito User Pool."
+
+  type = map(object({
+    provider_type     = string
+    provider_details  = map(string)
+    attribute_mapping = optional(map(string), {})
+    idp_identifiers   = optional(list(string), [])
+  }))
+
+  default = {}
+}
 #########################################################################################################################################
 ### Domain
 #########################################################################################################################################

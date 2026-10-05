@@ -16,10 +16,37 @@ module "cognito" {
   allow_software_mfa_token = true
   email_subject            = "Sign up for <project_name>."
 
+  # --------------------------------------------------------------------------
+  # Federated Identity Providers
+  # --------------------------------------------------------------------------
+  # Example configuration for Google federation.
+  #
+  # Replace the example client ID and client secret with valid credentials
+  # when testing the provider against AWS.
+  user_pool_identity_providers = {
+    Google = {
+      provider_type = "Google"
+
+      provider_details = {
+        client_id        = "example-google-client-id"
+        client_secret    = "example-google-client-secret"
+        authorize_scopes = "openid email profile"
+      }
+
+      attribute_mapping = {
+        email    = "email"
+        username = "sub"
+      }
+
+      idp_identifiers = []
+    }
+  }
+
   users = {
     user01 = {
       email = "test01@test.com"
     }
+
     user02 = {
       email = "test02@test.com"
     }
@@ -36,6 +63,7 @@ module "cognito" {
     {
       name       = "test-pool Resource"
       identifier = "test-pool"
+
       scope = [
         {
           scope_name        = "read"
@@ -56,10 +84,23 @@ module "cognito" {
       generate_secret                      = true
       logout_urls                          = []
       refresh_token_validity               = 30
-      allowed_oauth_flows_user_pool_client = false
-      supported_identity_providers         = ["COGNITO"]
-      allowed_oauth_scopes                 = ["email", "openid", "profile", "phone"]
-      allowed_oauth_flows                  = ["code"]
+      allowed_oauth_flows_user_pool_client = true
+
+      supported_identity_providers = [
+        "COGNITO",
+        "Google"
+      ]
+
+      allowed_oauth_scopes = [
+        "email",
+        "openid",
+        "profile",
+        "phone"
+      ]
+
+      allowed_oauth_flows = [
+        "code"
+      ]
     },
     {
       name                                 = "test-client-2"
@@ -76,6 +117,7 @@ module "cognito" {
       supported_identity_providers         = ["COGNITO"]
       prevent_user_existence_errors        = "ENABLED"
       enable_token_revocation              = true
+
       token_validity_units = {
         access_token  = "minutes"
         id_token      = "minutes"
